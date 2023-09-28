@@ -14,43 +14,107 @@
     <br>
 
     <div class="text-center">
+        <div class="btn-group me-2" role="group" aria-label="Second group">
+            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+                data-bs-target="#input-year-modal">edit</button>
+        </div>
         <div class="btn-group me-2" role="group" aria-label="First group">
             <div id="year-nav" class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                <!-- <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
-                <label class="btn btn-outline-primary" for="btnradio1">year 1</label>
+ 
+                <!-- YEAR HERE -->
 
-                <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
-                <label class="btn btn-outline-primary" for="btnradio2">year 2</label> -->
             </div>
         </div>
         <div class="btn-group me-2" role="group" aria-label="Second group">
             <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
-                data-bs-target="#input-year-modal"">+</button>
+                data-bs-target="#input-year-modal">+</button>
         </div>
     </div>
 
     <br>
     <br>
 
-    <div class=" card text-center">
-                <div class="card-header">
-                    <ul class="nav nav-pills card-header-pills">
-                        <li class="nav-item m-1">
-                            <button type="button" class="btn btn-outline-primary">Edit Module</button>
-                        </li>
+    <h2>Modules 
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#input-module-modal">+</button>
+    </h2>
+    
+    <br>
 
-                        <li class="nav-item m-1">
-                            <button type="button" class="btn btn-secondary">Add Module</button>
-                        </li>
-                    </ul>
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">Data Structure and Algorithm</h5>
-                    <hr>
+    <div id="module-cards">
+
+        
+
+                <div class="card text-center" id="_ID_">
+                    <div class="card-header">
+                        <ul class="nav nav-pills card-header-pills d-flex justify-content-between align-middle">
+                            <li class="nav-item m-1" >
+                                <button type="button" class="btn btn-outline-primary">_NAME_</button>
+                            </li>
+                            <li class="nav-item m-1">
+                                
+                                <button type="button" class="btn btn-outline-primary">+</button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+
+                        <div class="accordion" id="accordionPanelsStayOpenExample">
+                            
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    Test 1 
+                                    <span class="badge text-bg-success ms-2">XXX / XXX %</span>
+                                  </button>
+                                </h2>
+                                <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                                  <div class="accordion-body">
+                                   
+                                    <form>
+                                        <div class="d-flex p-2">
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text">Mark</span>
+                                                
+                                                <input id="__actual_mark" type="number" class="form-control"
+                                                aria-label="Amount (to the nearest dollar)">
+                                                
+                                                
+                                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary z-1">
+                                                    --%
+                                                </span>
+                                                
+                                                
+                                                <span class="input-group-text">/</span>
+                                                
+                                                <input id="__actual_mark" type="number" class="form-control"
+                                                    aria-label="Amount (to the nearest dollar)">
+
+                                                </div>
+
+                                            <div class="input-group mb-3 ps-4">
+                                                <span class="input-group-text">Percentage</span>
+                                                <input id="__actual_mark" type="number" class="form-control"
+                                                    aria-label="Amount (to the nearest dollar)">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                    </form>
+
+                                    <form>
+                                        <div class="input-group p-2">
+                                            <span class="input-group-text">Title</span>
+                                            <input type="text" class="form-control" value="Test_NAME" aria-label="Recipient's username with two button addons">
+                                            <button class="btn btn-outline-secondary" type="button">Change Name</button>
+                                            <button class="btn btn-outline-danger" type="button">Remove Data</button>
+                                          </div>
+                                    </form>
+
+                                  </div>
+                                </div>
+                              </div>
 
 
 
-                    <div class="accordion" id="accordionPanelsStayOpenExample">
                         <div class="accordion-item">
                             <h2 class="accordion-header">
                                 <button class="accordion-button" type="button" data-bs-toggle="collapse"
@@ -92,14 +156,16 @@
 
                     </div>
 
-                    <br>
-
-                    <button type="button" class="btn btn-secondary">Add Data</button>
-
-
+                    </div>
                 </div>
+       
+
         </div>
 
+
+        <!-- MODAL -->
+
+        <!-- INPUT YEAR MODAL -->
 
         <div class="modal fade" tabindex="-1" id="input-year-modal">
             <div class="modal-dialog modal-dialog-centered">
@@ -108,18 +174,16 @@
                         <h5 class="modal-title">New Data Set</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form onsubmit="addYear()">
+                    <form id="add-year-form">
                         <div class="modal-body">
-
                             <div>
                                 <label for="year-new-name-field" class="form-label">Enter Name</label>
                                 <input type="text" class="form-control" id="year-new-name-field" required>
                             </div>
-
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
-                            <input type="submit" class="btn btn-primary"></input>
+                            <button type="submit" class="btn btn-primary">Submit</button>
                         </div>
                     </form>
                 </div>
@@ -127,6 +191,30 @@
         </div>
 
 
+        <!-- INPUT MODULE MODAL -->
+
+        <div class="modal fade" tabindex="-1" id="input-module-modal">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">New Module</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form id="add-module-form">
+                        <div class="modal-body">
+                            <div>
+                                <label for="module-new-name-field" class="form-label">Enter Name</label>
+                                <input type="text" class="form-control" id="module-new-name-field" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
 
 
 
