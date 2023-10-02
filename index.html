@@ -16,17 +16,26 @@
     <br />
 
     <div class="text-center">
-      <div class="btn-group me-2" role="group" aria-label="Second group">
+      <div class="btn-group me-4" role="group" aria-label="Second group">
         <button
           type="button"
           class="btn btn-outline-primary"
           data-bs-toggle="modal"
-          data-bs-target="#input-year-modal"
+          data-bs-target="#upload-data-modal"
         >
-          edit
+          UP
         </button>
+        <button
+          type="button"
+          class="btn btn-outline-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#download-data-modal"
+        >
+          DN
+        </button>
+        <button type="button" class="btn btn-outline-primary">SV</button>
       </div>
-      <div class="btn-group me-2" role="group" aria-label="First group">
+      <div class="btn-group me-4" role="group" aria-label="First group">
         <div
           id="year-nav"
           class="btn-group"
@@ -203,6 +212,135 @@
               <button type="submit" class="btn btn-primary">Submit</button>
             </div>
           </form>
+        </div>
+      </div>
+    </div>
+
+    <br />
+
+    <h2>Table View</h2>
+    <table id="table-view" class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Modules</th>
+
+          <th scope="col">D1</th>
+          <th scope="col">D2</th>
+          <th scope="col">D3</th>
+
+          <th scope="col">% Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">1</th>
+          <td>Mark</td>
+          <td>Otto</td>
+          <td>@mdo</td>
+        </tr>
+        <tr>
+          <th scope="row">2</th>
+          <td>Jacob</td>
+          <td>Thornton</td>
+          <td>@fat</td>
+        </tr>
+        <tr>
+          <th scope="row">3</th>
+          <td colspan="2">Larry the Bird</td>
+          <td>@twitter</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <br />
+    <br />
+
+    <!-- DOWNLOAD MODAL -->
+
+    <div class="modal fade" tabindex="-1" id="download-data-modal">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Download Data</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+
+          <div class="modal-body">
+            <p>
+              This will download all data of all years and modules as a CSV file
+              or a JSON file.
+              <strong
+                >Please note that CSV files cannot be used with the upload
+                feature.</strong
+              >
+            </p>
+
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-primary"
+                onclick="downloadCSV()"
+              >
+                Download CSV (Not For Backup)
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                onclick="downloadJSON()"
+              >
+                Download JSON
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- UPLOAD FILE MODAL -->
+
+    <div class="modal fade" tabindex="-1" id="upload-data-modal">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Upload JSON File</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+
+          <div class="modal-body">
+            <p>
+              Upload a JSON file to restore your data. This will overwrite all
+              existing data.
+            </p>
+
+            <div class="modal-footer">
+              <div class="input-group">
+                <input
+                  type="file"
+                  class="form-control"
+                  aria-describedby="inputGroupFileAddon04"
+                  aria-label="Upload"
+                  id="json-upload-input"
+                />
+                <button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  onclick="uploadJSON()"
+                >
+                  Load Data
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

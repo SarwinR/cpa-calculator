@@ -1,28 +1,7 @@
 dict = {
-  year1: {
-    name: "year_ID",
-    modules: {
-      module_ID: {
-        name: "module_NAME",
-        tests: {
-          test_ID: {
-            name: "test_NAME",
-            max_marks: 100,
-            marks: 90,
-            percentage_accounted_for: 10,
-          },
-        },
-      },
-      COMS: {},
-    },
-  },
-
-  year2: {
-    name: "year 2",
-    modules: {
-      DSA: {},
-      OOSD: {},
-    },
+  "year-1": {
+    name: "Year 1",
+    modules: {},
   },
 };
 
@@ -55,7 +34,7 @@ addModuleForm.addEventListener("submit", function (event) {
 
 // YEAR NAVIGATION
 
-function updateYearNavUI() {
+function buildYearNavUI() {
   year_navigation.innerHTML = "";
 
   for (const year in dict) {
@@ -86,12 +65,12 @@ function updateYearNavUI() {
 
 function addYear() {
   var yearName = document.getElementById("year-new-name-field").value;
-  dict[generateID(yearName)] = {
+  dict[generateYearID(yearName)] = {
     name: yearName,
     modules: {},
   };
 
-  updateYearNavUI();
+  buildYearNavUI();
 
   document.getElementById("year-new-name-field").value = "";
   document.getElementById("year-new-name-field").focus();
@@ -99,10 +78,11 @@ function addYear() {
 
 function setSelectedYear(year) {
   selectedYear = year;
-  updateModulesUI();
+  buildModulesUI();
+  buildTableViewUI();
 }
 
-function generateID(name) {
+function generateYearID(name) {
   var id = name.replace(/ /g, "-").toLowerCase();
   if (id in dict) {
     id = id + "-o";
@@ -116,9 +96,11 @@ function generateID(name) {
 }
 
 // MODULES UI
-function updateModulesUI() {
+function buildModulesUI() {
   var modules = document.getElementById("module-cards");
   modules.innerHTML = "";
+
+  console.log(dict);
 
   for (const module in dict[selectedYear]["modules"]) {
     var card = document.createElement("div");
@@ -140,7 +122,8 @@ function updateModulesUI() {
     var cardHeaderPillsItem1Button = document.createElement("button");
     cardHeaderPillsItem1Button.setAttribute("type", "button");
     cardHeaderPillsItem1Button.setAttribute("class", "btn btn-outline-primary");
-    cardHeaderPillsItem1Button.innerHTML = module;
+    cardHeaderPillsItem1Button.innerHTML =
+      dict[selectedYear]["modules"][module]["name"];
 
     cardHeaderPillsItem1.appendChild(cardHeaderPillsItem1Button);
 
@@ -151,6 +134,9 @@ function updateModulesUI() {
     cardHeaderPillsItem2Button.setAttribute("type", "button");
     cardHeaderPillsItem2Button.setAttribute("class", "btn btn-outline-primary");
     cardHeaderPillsItem2Button.innerHTML = "+";
+    cardHeaderPillsItem2Button.addEventListener("click", function (event) {
+      addTest(module);
+    });
 
     cardHeaderPillsItem2.appendChild(cardHeaderPillsItem2Button);
 
@@ -194,31 +180,36 @@ function updateModulesUI() {
     card.appendChild(cardBody);
 
     modules.appendChild(card);
+
+    var br = document.createElement("br");
+    modules.appendChild(br);
   }
+
+  buildTestUI();
 }
 
 function addModule() {
   var moduleName = document.getElementById("module-new-name-field").value;
-  dict[selectedYear]["modules"][generateID(moduleName)] = {
+  dict[selectedYear]["modules"][generateYearID(moduleName)] = {
     name: moduleName,
+    tests: {},
   };
 
   console.log(dict);
 
-  updateModulesUI();
-  updateTestUI();
+  buildModulesUI();
+  buildTestUI();
 
   document.getElementById("module-new-name-field").value = "";
   document.getElementById("module-new-name-field").focus();
 }
 
-function updateTestUI() {
+function buildTestUI() {
   for (const module in dict[selectedYear]["modules"]) {
     var accordion = document.getElementById(module + "-accordion");
+    accordion.innerHTML = "";
 
     for (const test in dict[selectedYear]["modules"][module]["tests"]) {
-      console.log(test);
-
       var accordionItem = document.createElement("div");
       accordionItem.setAttribute("class", "accordion-item");
       accordion.appendChild(accordionItem);
@@ -240,28 +231,40 @@ function updateTestUI() {
         "aria-controls",
         module + "-" + test + "-collapse"
       );
-      accordionButton.innerHTML =
-        dict[selectedYear]["modules"][module]["tests"][test]["name"];
       accordionHeader.appendChild(accordionButton);
+
+      var testName = document.createElement("p");
+      testName.setAttribute("class", "m-0");
+      testName.setAttribute("id", module + "-" + test + "-name");
+      testName.innerHTML =
+        dict[selectedYear]["modules"][module]["tests"][test]["name"];
+      accordionButton.appendChild(testName);
 
       var percentage =
         dict[selectedYear]["modules"][module]["tests"][test]["marks"] /
         dict[selectedYear]["modules"][module]["tests"][test]["max_marks"];
 
       var span = document.createElement("span");
+      span.setAttribute("id", module + "-" + test + "-percentage-span");
       span.setAttribute(
         "class",
         "badge text-bg-" + getColorFromMark(percentage) + " ms-2"
       );
+
       span.innerHTML =
-        percentage *
-          dict[selectedYear]["modules"][module]["tests"][test][
-            "percentage_accounted_for"
-          ] +
+        Math.round(
+          percentage *
+            dict[selectedYear]["modules"][module]["tests"][test][
+              "percentage_accounted_for"
+            ] *
+            100
+        ) /
+          100 +
         "/" +
         dict[selectedYear]["modules"][module]["tests"][test][
           "percentage_accounted_for"
         ];
+
       accordionButton.appendChild(span);
 
       var accordionCollapse = document.createElement("div");
@@ -301,9 +304,19 @@ function updateTestUI() {
         dict[selectedYear]["modules"][module]["tests"][test]["marks"]
       );
       input1.setAttribute("class", "form-control");
+      input1.addEventListener("change", function (event) {
+        updateTestData(
+          module,
+          test,
+          "marks",
+          document.getElementById(module + "-" + test + "-actual-mark-input")
+            .value
+        );
+      });
       inputGroup1.appendChild(input1);
 
       var span1 = document.createElement("span");
+      span1.setAttribute("id", module + "-" + test + "-actual-mark-span");
       span1.setAttribute(
         "class",
         "position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary z-1"
@@ -324,6 +337,14 @@ function updateTestUI() {
         dict[selectedYear]["modules"][module]["tests"][test]["max_marks"]
       );
       input2.setAttribute("class", "form-control");
+      input2.addEventListener("change", function (event) {
+        updateTestData(
+          module,
+          test,
+          "max_marks",
+          document.getElementById(module + "-" + test + "-max-mark-input").value
+        );
+      });
       inputGroup1.appendChild(input2);
 
       var inputGroup2 = document.createElement("div");
@@ -345,6 +366,15 @@ function updateTestUI() {
         ]
       );
       input3.setAttribute("class", "form-control");
+      input3.addEventListener("change", function (event) {
+        updateTestData(
+          module,
+          test,
+          "percentage_accounted_for",
+          document.getElementById(module + "-" + test + "-percentage-input")
+            .value
+        );
+      });
       inputGroup2.appendChild(input3);
 
       var span2 = document.createElement("span");
@@ -354,6 +384,9 @@ function updateTestUI() {
 
       var form2 = document.createElement("form");
       accordionBody.appendChild(form2);
+      form2.addEventListener("submit", function (event) {
+        event.preventDefault();
+      });
 
       var inputGroup3 = document.createElement("div");
       inputGroup3.setAttribute("class", "input-group p-2");
@@ -365,12 +398,21 @@ function updateTestUI() {
       inputGroup3.appendChild(inputGroupText4);
 
       var input4 = document.createElement("input");
+      input4.setAttribute("id", module + "-" + test + "-title-input");
       input4.setAttribute("type", "text");
       input4.setAttribute("class", "form-control");
       input4.setAttribute(
         "value",
         dict[selectedYear]["modules"][module]["tests"][test]["name"]
       );
+      input4.addEventListener("change", function (event) {
+        updateTestName(
+          module,
+          test,
+          document.getElementById(module + "-" + test + "-title-input").value
+        );
+      });
+
       inputGroup3.appendChild(input4);
 
       var button = document.createElement("button");
@@ -379,7 +421,31 @@ function updateTestUI() {
       button.innerHTML =
         "Delete " +
         dict[selectedYear]["modules"][module]["tests"][test]["name"];
+      button.addEventListener("click", function (event) {
+        deleteTest(module, test);
+      });
       accordionBody.appendChild(button);
+    }
+
+    if (
+      Object.keys(dict[selectedYear]["modules"][module]["tests"]).length === 0
+    ) {
+      var card = document.createElement("div");
+      card.setAttribute("class", "card text-center");
+      card.setAttribute("id", "no-tests");
+
+      var cardBody = document.createElement("div");
+      cardBody.setAttribute("class", "card-body");
+
+      var cardBodyText = document.createElement("p");
+      cardBodyText.setAttribute("class", "card-text");
+      cardBodyText.innerHTML = "No tests yet. Add a test to get started.";
+
+      cardBody.appendChild(cardBodyText);
+
+      card.appendChild(cardBody);
+
+      accordion.appendChild(card);
     }
   }
 }
@@ -398,6 +464,305 @@ function getColorFromMark(mark) {
   return "success";
 }
 
-updateYearNavUI();
-updateModulesUI();
-updateTestUI();
+function updateTestData(module, test, key, value) {
+  // convert value to number
+  value = Number(value);
+  dict[selectedYear]["modules"][module]["tests"][test][key] = value;
+  updateTestUI(module, test);
+  buildTableViewUI();
+}
+
+function updateTestName(module, test, name) {
+  dict[selectedYear]["modules"][module]["tests"][test]["name"] = name;
+  updateTestUI(module, test);
+}
+
+function updateTestUI(module, test) {
+  var percentage =
+    dict[selectedYear]["modules"][module]["tests"][test]["marks"] /
+    dict[selectedYear]["modules"][module]["tests"][test]["max_marks"];
+
+  document.getElementById(module + "-" + test + "-percentage-span").innerText =
+    Math.round(
+      percentage *
+        dict[selectedYear]["modules"][module]["tests"][test][
+          "percentage_accounted_for"
+        ] *
+        100
+    ) /
+      100 +
+    "/" +
+    dict[selectedYear]["modules"][module]["tests"][test][
+      "percentage_accounted_for"
+    ];
+
+  document.getElementById(module + "-" + test + "-actual-mark-span").innerText =
+    Math.round(percentage * 100) + "%";
+
+  document.getElementById(module + "-" + test + "-name").innerText =
+    dict[selectedYear]["modules"][module]["tests"][test]["name"];
+}
+
+function generateTestName(module) {
+  return (
+    "Test_" +
+    (Object.keys(dict[selectedYear]["modules"][module]["tests"]).length + 1)
+  );
+}
+
+function generateTestID(name) {
+  var id = name.replace(/ /g, "-").toLowerCase();
+  if (id in dict[selectedYear]["modules"][module]["tests"]) {
+    id = id + "-o";
+  }
+
+  while (id in dict[selectedYear]["modules"][module]["tests"]) {
+    id = id + "o";
+  }
+
+  return id;
+}
+
+function addTest(module) {
+  var name = generateTestName(module);
+  dict[selectedYear]["modules"][module]["tests"][name] = {
+    name: generateTestName(module),
+    max_marks: 0,
+    marks: 0,
+    percentage_accounted_for: 0,
+  };
+
+  buildTestUI();
+  buildTableViewUI();
+}
+
+function deleteTest(module, test) {
+  delete dict[selectedYear]["modules"][module]["tests"][test];
+  buildTestUI();
+  buildTableViewUI();
+}
+
+// table view
+// columns: module, col for each test, total
+// rows: for each module
+
+function buildTableViewUI() {
+  var table = document.getElementById("table-view");
+  table.innerHTML = "";
+
+  if (Object.keys(dict[selectedYear]["modules"]).length === 0) {
+    var br = document.createElement("br");
+    table.appendChild(br);
+
+    var card = document.createElement("div");
+    card.setAttribute("class", "card text-center");
+    card.setAttribute("id", "no-modules");
+
+    var cardBody = document.createElement("div");
+    cardBody.setAttribute("class", "card-body");
+
+    var cardBodyText = document.createElement("p");
+    cardBodyText.setAttribute("class", "card-text");
+    cardBodyText.innerHTML = "No modules yet. Add a module to get started.";
+
+    cardBody.appendChild(cardBodyText);
+
+    card.appendChild(cardBody);
+
+    table.appendChild(card);
+
+    return;
+  }
+
+  columns = ["Modules"];
+  // look for the module with the most tests
+  var maxTests = 0;
+  for (const module in dict[selectedYear]["modules"]) {
+    if (
+      Object.keys(dict[selectedYear]["modules"][module]["tests"]).length >
+      maxTests
+    ) {
+      maxTests = Object.keys(
+        dict[selectedYear]["modules"][module]["tests"]
+      ).length;
+    }
+  }
+
+  for (var i = 0; i < maxTests; i++) {
+    columns.push("Data " + (i + 1));
+  }
+
+  columns.push("Total");
+
+  // build header
+  var tableHead = document.createElement("thead");
+  table.appendChild(tableHead);
+
+  var tableHeadRow = document.createElement("tr");
+  tableHead.appendChild(tableHeadRow);
+
+  for (const column of columns) {
+    var tableHeadColumn = document.createElement("th");
+    tableHeadColumn.setAttribute("scope", "col");
+    tableHeadColumn.innerHTML = column;
+    tableHeadRow.appendChild(tableHeadColumn);
+  }
+
+  var tableBody = document.createElement("tbody");
+  table.appendChild(tableBody);
+
+  // build body - for each module (for module with not enough tests, set the value to "-")
+  for (const module in dict[selectedYear]["modules"]) {
+    // for each module, create a row
+    var tableBodyRow = document.createElement("tr");
+    tableBody.appendChild(tableBodyRow);
+
+    // create a column for the module name
+    var tableBodyColumn = document.createElement("th");
+    tableBodyColumn.setAttribute("scope", "row");
+    tableBodyColumn.innerHTML = dict[selectedYear]["modules"][module]["name"];
+    tableBodyRow.appendChild(tableBodyColumn);
+
+    // for each test, create a column
+    for (const test in dict[selectedYear]["modules"][module]["tests"]) {
+      var tableBodyColumn = document.createElement("td");
+
+      var percentage =
+        dict[selectedYear]["modules"][module]["tests"][test]["marks"] /
+        dict[selectedYear]["modules"][module]["tests"][test]["max_marks"];
+      tableBodyColumn.innerHTML = `
+        <span class="badge bg-primary rounded-pill">
+          ${
+            Math.round(
+              percentage *
+                dict[selectedYear]["modules"][module]["tests"][test][
+                  "percentage_accounted_for"
+                ] *
+                100
+            ) / 100
+          }/${
+        dict[selectedYear]["modules"][module]["tests"][test][
+          "percentage_accounted_for"
+        ]
+      }
+        </span>
+      `;
+      tableBodyRow.appendChild(tableBodyColumn);
+    }
+    // for each test that is missing, create a column with "-"
+    for (
+      var i = 0;
+      i <
+      maxTests -
+        Object.keys(dict[selectedYear]["modules"][module]["tests"]).length;
+      i++
+    ) {
+      var tableBodyColumn = document.createElement("td");
+      tableBodyColumn.innerHTML = `
+        <span class="badge bg-secondary rounded-pill ">
+          - 
+        </span>
+      `;
+      tableBodyRow.appendChild(tableBodyColumn);
+    }
+
+    // create a column for the total
+    var tableBodyColumn = document.createElement("td");
+
+    // total is sum of all the percentages of the tests
+    var total = 0;
+    var maxTotal = 0;
+    for (const test in dict[selectedYear]["modules"][module]["tests"]) {
+      total +=
+        (dict[selectedYear]["modules"][module]["tests"][test]["marks"] /
+          dict[selectedYear]["modules"][module]["tests"][test]["max_marks"]) *
+        dict[selectedYear]["modules"][module]["tests"][test][
+          "percentage_accounted_for"
+        ];
+      maxTotal +=
+        dict[selectedYear]["modules"][module]["tests"][test][
+          "percentage_accounted_for"
+        ];
+    }
+
+    tableBodyColumn.innerHTML = `
+      <span class="badge bg-primary rounded-pill">
+        ${Math.round(total * 100) / 100}/${maxTotal}
+      </span> 
+    `;
+
+    tableBodyRow.appendChild(tableBodyColumn);
+  }
+}
+
+buildYearNavUI();
+buildModulesUI();
+buildTestUI();
+buildTableViewUI();
+
+function downloadJSON() {
+  var dataStr =
+    "data:text/json;charset=utf-8," +
+    encodeURIComponent(JSON.stringify(dict, null, 2));
+
+  var dlAnchorElem = document.createElement("a");
+  dlAnchorElem.setAttribute("href", dataStr);
+  dlAnchorElem.setAttribute("download", "data.json");
+
+  dlAnchorElem.click();
+  dlAnchorElem.remove();
+}
+
+function downloadCSV() {
+  var csv = "Year,Module,Test,Max Marks,Marks,Percentage Accounted For\n";
+
+  for (const year in dict) {
+    for (const module in dict[year]["modules"]) {
+      for (const test in dict[year]["modules"][module]["tests"]) {
+        csv += `${dict[year]["name"]},${dict[year]["modules"][module]["name"]},${dict[year]["modules"][module]["tests"][test]["name"]},${dict[year]["modules"][module]["tests"][test]["max_marks"]},${dict[year]["modules"][module]["tests"][test]["marks"]},${dict[year]["modules"][module]["tests"][test]["percentage_accounted_for"]}\n`;
+      }
+    }
+  }
+
+  var dataStr = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
+
+  var dlAnchorElem = document.createElement("a");
+  dlAnchorElem.setAttribute("href", dataStr);
+  dlAnchorElem.setAttribute("download", "data.csv");
+
+  dlAnchorElem.click();
+  dlAnchorElem.remove();
+}
+
+function uploadJSON() {
+  try {
+    var file = document.getElementById("json-upload-input").files[0];
+    var reader = new FileReader();
+
+    reader.onload = function (event) {
+      // try to parse the json
+      try {
+        dict = JSON.parse(event.target.result);
+      } catch (error) {
+        alert("Invalid JSON file");
+        return;
+      }
+
+      selectedYear = Object.keys(dict)[0];
+
+      buildYearNavUI();
+      buildModulesUI();
+      buildTestUI();
+      buildTableViewUI();
+
+      var modal = bootstrap.Modal.getInstance(
+        document.getElementById("upload-data-modal")
+      );
+      modal.hide();
+    };
+    reader.readAsText(file);
+  } catch (error) {
+    alert("Please select a file");
+    return;
+  }
+}
