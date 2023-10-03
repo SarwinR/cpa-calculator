@@ -5,6 +5,10 @@ dict = {
   },
 };
 
+if (localStorage.getItem("data") !== null) {
+  dict = JSON.parse(localStorage.getItem("data"));
+}
+
 var modules = document.getElementById("module-cards");
 var selectedYear = Object.keys(dict)[0];
 
@@ -765,4 +769,8 @@ function uploadJSON() {
     alert("Please select a file");
     return;
   }
+}
+
+function saveDataToLocalStorage() {
+  localStorage.setItem("data", JSON.stringify(dict));
 }
